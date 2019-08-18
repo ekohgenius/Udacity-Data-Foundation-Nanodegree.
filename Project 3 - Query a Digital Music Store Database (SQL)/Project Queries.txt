@@ -1,0 +1,44 @@
+/* Query 1 - query used for first Insight */
+SELECT (e.FirstName||” “|| e.LastName) Employee_Name, c.CustomerId, (c.FirstName||” “||c.LastName) Customer_Name, SUM(l.UnitPrice*l.Quantity) Purchases
+FROM Customer c
+JOIN Employee e, Invoice i, InvoiceLine l
+ON e.EmployeeId =c.SupportRepId AND c.CustomerId = i.CustomerId AND i.InvoiceId = l.InvoiceId
+GROUP BY 3
+ORDER BY 4 DESC
+
+
+/* Query 2 - query used for second Insight */
+SELECT Country, CASE WHEN Day = “0” THEN “Sunday”
+WHEN Day = “1” THEN “Monday”
+WHEN Day = “2” THEN “Tuesday”
+WHEN Day = “3” THEN “Wednesday”
+WHEN Day = “4” THEN “Thursday”
+WHEN Day = “5” THEN “Friday”
+WHEN Day = “6” THEN “Saturday”
+END AS DAY, Sales
+FROM(SELECT c.Country, STRFTIME(‘%w’, i.InvoiceDate) Day, SUM(l.UnitPrice*l.Quantity) Sales
+FROM Invoice i
+JOIN InvoiceLine l, Customer c
+ON i.InvoiceId = l.InvoiceId AND i.CustomerId = c.CustomerId
+GROUP BY 1
+ORDER BY 1 DESC)
+
+
+
+/* Query 3 - query used for third Insight */
+SELECT a.ArtistId, a.Name, COUNT(t.AlbumId) Songs
+FROM Artist a
+JOIN Album ab, Track t, Genre g 
+ON a.ArtistId = ab.ArtistId AND ab.AlbumId = t.AlbumId AND t.GenreId = g.GenreId
+WHERE g.Name = “Rock”
+GROUP BY 1
+ORDER BY 3 DESC
+
+
+/* Query 4 - query used for fourth Insight */
+SELECT g.Name, (t.Milliseconds/(1.667 * 100000))SongLength_Mins, t.TrackId, SUM(l.UnitPrice*l.Quantity) Sales
+FROM Track t
+JOIN Genre g, InvoiceLine l
+ON t.TrackId = l.TrackId AND t.GenreId = g.GenreId
+GROUP BY 3
+ORDER BY 4 DESC
